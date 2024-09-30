@@ -1,0 +1,5 @@
+kafka:
+  bootstrap_servers: "localhost:9092"
+  group_id: "onnx"
+  topics:
+    - "onnx_inference_request"
