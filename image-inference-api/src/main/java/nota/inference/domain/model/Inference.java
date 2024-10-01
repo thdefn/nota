@@ -51,4 +51,12 @@ public class Inference extends BaseTimeEntity {
     public void fail() {
         status = InferenceStatus.FAIL;
     }
+
+    public boolean isProcessing() {
+        return InferenceStatus.PROCESSING.equals(status);
+    }
+
+    public boolean isFail() {
+        return InferenceStatus.FAIL.equals(status);
+    }
 }

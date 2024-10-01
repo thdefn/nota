@@ -7,6 +7,9 @@ import nota.inference.domain.model.Runtime;
 import nota.inference.domain.repository.InferenceRepository;
 import nota.inference.dto.message.InferenceRequestMessage;
 import nota.inference.dto.response.ExecuteInferenceResponse;
+import nota.inference.dto.response.InferenceResultResponse;
+import nota.inference.exception.Error;
+import nota.inference.exception.InferenceException;
 import nota.inference.message.KafkaPublisher;
 import nota.inference.util.FileUtil;
 import org.springframework.stereotype.Service;
@@ -44,16 +47,26 @@ public class InferenceService {
     @Transactional
     public void markInferenceAsComplete(Long id, String result) {
         Inference inference = inferenceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("not found inference"));
+                .filter(Inference::isProcessing)
+                .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
         inference.complete(result);
     }
 
     @Transactional
     public void markInferenceAsFail(Long id) {
         Inference inference = inferenceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("not found inference"));
+                .filter(Inference::isProcessing)
+                .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
         inference.fail();
     }
 
 
+    public InferenceResultResponse getInferenceResultById(Long id) {
+        Inference inference = inferenceRepository.findById(id)
+                .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
+        if(inference.isFail())
+            throw new InferenceException(Error.INFERENCE_EXECUTION_FAILED);
+
+        return InferenceResultResponse.from(inference);
+    }
 }
