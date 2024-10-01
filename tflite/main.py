@@ -7,6 +7,7 @@ from confluent_kafka import Producer, Consumer, KafkaError
 from contextlib import asynccontextmanager
 from config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID, KAFKA_TOPICS
 import json
+import base64
 
 app = FastAPI()
 
@@ -43,24 +44,33 @@ async def consume_messages():
             else:
                 print(f"Consumer error: {msg.error()}")
                 break
+        message_data = json.loads(msg.value().decode('utf-8'))
+        inference_id = message_data['id']
         try:
-            message_data = json.loads(msg.value().decode('utf-8'))
-            print(f"Received message: {message_data}")
-
-            await predict(message_data)
+            file_content = base64.b64decode(message_data['fileContent'])
+            await predict(file_content, inference_id)
         except Exception as e:
             print(f"Error in processing message: {e}")
+
+            publishing_message = {"id": inference_id}
+            message_str = json.dumps(publishing_message)
+
+            topic = "inference_fail"
+            producer.produce(topic, message_str.encode('utf-8'))
+            producer.poll(0)
+            producer.flush()
 
         await asyncio.sleep(0.1)
 
 
-async def predict(message):
-    image = Image.open(BytesIO(message))
+async def predict(file_content, inference_id):
+    image = Image.open(BytesIO(file_content))
     result = run_inference(image)
     print(f"Prediction result: {result}")
-    publishing_message = {"result": result}
+    publishing_message = {"id" : inference_id, "result": result}
     message_str = json.dumps(publishing_message)
 
-    topic = "prediction_result_topic"
+    topic = "inference_success"
     producer.produce(topic, message_str.encode('utf-8'))
+    producer.poll(0)
     producer.flush()

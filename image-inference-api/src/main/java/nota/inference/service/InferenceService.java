@@ -1,5 +1,6 @@
 package nota.inference.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nota.inference.domain.model.Inference;
 import nota.inference.domain.model.Runtime;
@@ -38,6 +39,20 @@ public class InferenceService {
 
     private String getKafkaTopicFromRuntime(String runtime) {
         return runtime.toLowerCase() + "_inference_request";
+    }
+
+    @Transactional
+    public void markInferenceAsComplete(Long id, String result) {
+        Inference inference = inferenceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("not found inference"));
+        inference.complete(result);
+    }
+
+    @Transactional
+    public void markInferenceAsFail(Long id) {
+        Inference inference = inferenceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("not found inference"));
+        inference.fail();
     }
 
 

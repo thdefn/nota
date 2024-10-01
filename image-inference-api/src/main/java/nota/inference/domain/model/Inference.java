@@ -29,6 +29,8 @@ public class Inference extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private InferenceStatus status;
 
+    private String result;
+
     @Column(nullable = false)
     private String userId;
 
@@ -39,5 +41,14 @@ public class Inference extends BaseTimeEntity {
                 .userId(userId)
                 .status(InferenceStatus.PROCESSING)
                 .build();
+    }
+
+    public void complete(String result) {
+        status = InferenceStatus.COMPLETE;
+        this.result = result;
+    }
+
+    public void fail() {
+        status = InferenceStatus.FAIL;
     }
 }
