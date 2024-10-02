@@ -24,7 +24,7 @@ public class InferenceController {
 
     @PostMapping
     public ResponseEntity<ExecuteInferenceResponse> executeInference(
-            @RequestParam(value = "runtime") @EnumValue(enumClass = Runtime.class) String runtime,
+            @RequestParam(value = "runtime") @EnumValue(enumClass = Runtime.class, message = "허용되지 않는 runtime 입니다.") String runtime,
             @RequestPart(value = "image") MultipartFile file) throws IOException {
         return ResponseEntity.accepted().body(inferenceService.executeInference(file, runtime));
     }

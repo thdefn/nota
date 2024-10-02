@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,11 +20,19 @@ import static nota.inference.exception.Error.*;
 public class GlobalExceptionHandler {
     private static final String LOG_FORMAT = "Class : {}, Code : {}, Message : {}";
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ExceptionResponse<String>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        log.info(LOG_FORMAT, e.getClass().getSimpleName(), REQUEST_ARGUMENT_MISSING, e.getMessage());
+        return ResponseEntity.status(REQUEST_ARGUMENT_MISSING.httpStatus)
+                .body(new ExceptionResponse<>(REQUEST_ARGUMENT_MISSING.name(), e.getMessage()));
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ExceptionResponse<String>> handleConstraintViolationException(ConstraintViolationException e) {
         log.info(LOG_FORMAT, e.getClass().getSimpleName(), REQUEST_ARGUMENT_NOT_VALID, REQUEST_ARGUMENT_NOT_VALID.message);
+        String errorMessage = e.getMessage().split(":")[1].replaceFirst(" ", "");
         return ResponseEntity.status(REQUEST_ARGUMENT_NOT_VALID.httpStatus)
-                .body(new ExceptionResponse<>(REQUEST_ARGUMENT_NOT_VALID.name(), e.getMessage()));
+                .body(new ExceptionResponse<>(REQUEST_ARGUMENT_NOT_VALID.name(), errorMessage));
     }
 
     @ExceptionHandler(InferenceException.class)

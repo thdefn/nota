@@ -29,7 +29,7 @@ public class InferenceService {
         FileUtil.getFileExtension(file)
                 .map(String::toLowerCase)
                 .filter(VALID_FILE_EXTENSIONS::contains)
-                .orElseThrow(() -> new RuntimeException("not allowed file extension"));
+                .orElseThrow(() -> new InferenceException(Error.NOT_ALLOWED_FILE));
 
         Inference saved = inferenceRepository.save(
                 Inference.of(Runtime.valueOf(runtime.toUpperCase()), file.getOriginalFilename(), "mock"));
@@ -49,6 +49,7 @@ public class InferenceService {
         Inference inference = inferenceRepository.findById(id)
                 .filter(Inference::isProcessing)
                 .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
+
         inference.complete(result);
     }
 
@@ -57,6 +58,7 @@ public class InferenceService {
         Inference inference = inferenceRepository.findById(id)
                 .filter(Inference::isProcessing)
                 .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
+
         inference.fail();
     }
 
