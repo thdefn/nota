@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ExceptionResponse<String>> handleConstraintViolationException(ConstraintViolationException e) {
         log.info(LOG_FORMAT, e.getClass().getSimpleName(), REQUEST_ARGUMENT_NOT_VALID, REQUEST_ARGUMENT_NOT_VALID.message);
-        String errorMessage = e.getMessage().split(":")[1].replaceFirst(" ", "");
+        String errorMessage = e.getMessage().substring(e.getMessage().indexOf(":") + 1).trim();
         return ResponseEntity.status(REQUEST_ARGUMENT_NOT_VALID.httpStatus)
                 .body(new ExceptionResponse<>(REQUEST_ARGUMENT_NOT_VALID.name(), errorMessage));
     }

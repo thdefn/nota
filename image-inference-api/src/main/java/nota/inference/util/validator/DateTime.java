@@ -11,11 +11,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = EnumValueValidator.class)
-public @interface EnumValue {
-    Class<? extends Enum<?>> enumClass();
-
-    String message() default "not allowed enum value";
+@Constraint(validatedBy = DateTimeValidator.class)
+public @interface DateTime {
+    String message() default "invalid datetime format";
 
     boolean nullable() default false;
 

@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "inferences", indexes = {
+        @Index(name = "idx_inference_createdAt", columnList = "createdAt"),
         @Index(name = "idx_inference_userId", columnList = "userId"),
         @Index(name = "idx_inference_runtime", columnList = "runtime"),
         @Index(name = "idx_inference_id_userId_runtime", columnList = "id, userId, runtime")
