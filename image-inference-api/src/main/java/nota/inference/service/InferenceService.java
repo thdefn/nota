@@ -99,7 +99,7 @@ public class InferenceService {
                 .map(InferenceHistoryItem::from);
     }
 
-    public Specification<Inference> getQueryFilter(Optional<String> maybeUserId, Optional<String> maybeCreatedAt, Optional<String> maybeRuntime) {
+    private Specification<Inference> getQueryFilter(Optional<String> maybeUserId, Optional<String> maybeCreatedAt, Optional<String> maybeRuntime) {
         return (root, _, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             maybeUserId.ifPresent(userId -> predicates.add(criteriaBuilder.equal(root.get("userId"), userId)));
