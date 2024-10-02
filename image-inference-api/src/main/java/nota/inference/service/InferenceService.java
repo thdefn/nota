@@ -115,4 +115,8 @@ public class InferenceService {
         };
     }
 
+    public void deleteAllInferenceHistory(){
+        inferenceRepository.deleteAll();
+    }
+
 }
