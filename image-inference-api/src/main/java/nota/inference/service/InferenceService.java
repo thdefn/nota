@@ -25,14 +25,14 @@ public class InferenceService {
     private final KafkaPublisher kafkaPublisher;
     private final InferenceRepository inferenceRepository;
 
-    public ExecuteInferenceResponse executeInference(MultipartFile file, String runtime) throws IOException {
+    public ExecuteInferenceResponse executeInference(MultipartFile file, String runtime, String userId) throws IOException {
         FileUtil.getFileExtension(file)
                 .map(String::toLowerCase)
                 .filter(VALID_FILE_EXTENSIONS::contains)
                 .orElseThrow(() -> new InferenceException(Error.NOT_ALLOWED_FILE));
 
         Inference saved = inferenceRepository.save(
-                Inference.of(Runtime.valueOf(runtime.toUpperCase()), file.getOriginalFilename(), "mock"));
+                Inference.of(Runtime.valueOf(runtime.toUpperCase()), file.getOriginalFilename(), userId));
 
         String topic = getKafkaTopicFromRuntime(runtime);
         kafkaPublisher.sendMessage(topic, InferenceRequestMessage.of(saved.getId(), file));
@@ -66,9 +66,20 @@ public class InferenceService {
     public InferenceResultResponse getInferenceResultById(Long id) {
         Inference inference = inferenceRepository.findById(id)
                 .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
-        if(inference.isFail())
+        if (inference.isFail())
             throw new InferenceException(Error.INFERENCE_EXECUTION_FAILED);
 
         return InferenceResultResponse.from(inference);
     }
+
+    public void deleteInference(Long id, String userId) {
+        Inference inference = inferenceRepository.findById(id)
+                .orElseThrow(() -> new InferenceException(Error.INFERENCE_NOT_FOUND));
+
+        if(!inference.getUserId().equals(userId))
+            throw new InferenceException(Error.NOT_INFERENCE_EXECUTOR);
+
+        inferenceRepository.delete(inference);
+    }
+
 }

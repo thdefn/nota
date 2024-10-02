@@ -25,8 +25,9 @@ public class InferenceController {
     @PostMapping
     public ResponseEntity<ExecuteInferenceResponse> executeInference(
             @RequestParam(value = "runtime") @EnumValue(enumClass = Runtime.class, message = "허용되지 않는 runtime 입니다.") String runtime,
-            @RequestPart(value = "image") MultipartFile file) throws IOException {
-        return ResponseEntity.accepted().body(inferenceService.executeInference(file, runtime));
+            @RequestPart(value = "image") MultipartFile file,
+            @RequestHeader(defaultValue = "mock") String userId) throws IOException {
+        return ResponseEntity.accepted().body(inferenceService.executeInference(file, runtime, userId));
     }
 
     @GetMapping("/{inferenceId}")
@@ -37,5 +38,11 @@ public class InferenceController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{inferenceId}")
+    public ResponseEntity<Void> deleteInference(@PathVariable Long inferenceId,
+                                                @RequestHeader(defaultValue = "mock") String userId) {
+        inferenceService.deleteInference(inferenceId, userId);
+        return ResponseEntity.ok().build();
+    }
 
 }
