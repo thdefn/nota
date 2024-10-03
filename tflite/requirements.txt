@@ -1,0 +1,7 @@
+fastapi
+pillow
+tensorflow
+numpy
+confluent-kafka
+pyyaml
+uvicorn
