@@ -1,0 +1,7 @@
+fastapi
+pillow
+onnxruntime
+numpy
+confluent-kafka
+pyyaml
+uvicorn

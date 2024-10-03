@@ -1,5 +1,13 @@
-kafka:
-  bootstrap_servers: "localhost:9092"
-  group_id: "tflite-group"
-  topics:
-    - "tflite_inference_request"
+local:
+  kafka:
+    bootstrap_servers: "localhost:9092"
+    group_id: "tflite-group"
+    topics:
+      - "tflite_inference_request"
+
+dev:
+  kafka:
+    bootstrap_servers: "kafka:9092"
+    group_id: "tflite-group"
+    topics:
+      - "tflite_inference_request"
