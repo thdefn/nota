@@ -1,7 +1,7 @@
 ## Setup
 1. 해당 저장소를 클론합니다.
    ```
-   git clone https://github.com/thdefn/nota.git
+   git clone https://github.com/thdefn/nota.git
    ```
 2. 루트 디렉토리로 이동합니다.
 3. 루트 디렉토리에서 Docker Compose를 실행합니다.
