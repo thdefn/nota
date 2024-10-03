@@ -31,7 +31,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class InferenceService {
-    private static final Set<String> VALID_FILE_EXTENSIONS = Set.of("jpg", "png");
+    private static final Set<String> VALID_FILE_EXTENSIONS = Set.of("jpg", "png", "jpeg");
     private final KafkaPublisher kafkaPublisher;
     private final InferenceRepository inferenceRepository;
 
